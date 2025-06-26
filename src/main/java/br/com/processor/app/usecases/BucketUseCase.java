@@ -8,7 +8,6 @@ import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.nio.file.Path;
 
@@ -24,7 +23,7 @@ public class BucketUseCase {
   private static final Logger log = LoggerFactory.getLogger(BucketUseCase.class);
 
   public Mono<Path> getFile(String bucket, String key, Path destinationPath) {
-    GetObjectRequest request = GetObjectRequest.builder()
+    var request = GetObjectRequest.builder()
       .bucket(bucket)
       .key(key)
       .build();
@@ -36,7 +35,7 @@ public class BucketUseCase {
   }
 
   public Mono<Path> uploadFile(String bucket, String key, Path filePath) {
-    PutObjectRequest request = PutObjectRequest.builder()
+    var request = PutObjectRequest.builder()
       .bucket(bucket)
       .key(key)
       .build();

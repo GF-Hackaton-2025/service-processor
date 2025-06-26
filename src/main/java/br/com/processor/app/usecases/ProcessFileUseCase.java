@@ -1,5 +1,6 @@
 package br.com.processor.app.usecases;
 
+import br.com.processor.app.exception.BusinessException;
 import br.com.processor.app.usecases.models.UploadQueueMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +74,7 @@ public class ProcessFileUseCase {
             .redirectErrorStream(true)
             .start();
           int exitCode = process.waitFor();
-          if (exitCode != 0) throw new RuntimeException("FFmpeg failed");
+          if (exitCode != 0) throw new BusinessException("FFmpeg failed");
           return framesDir;
         }).subscribeOn(Schedulers.boundedElastic())
         .flatMap(dir -> zipDirectory(dir, zipPath));
