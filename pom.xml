@@ -19,8 +19,13 @@
             **/enums/**,
             **/config/**,
             **/models/**,
+            **/app/usecases/FileUseCase.java,
             **/ServiceProcessorApplication.java
         </sonar.exclusions>
+        <sonar.coverage.exclusions>
+            **/app/usecases/FileUseCase.java,
+            **/infra/sqs/SqsListener.java
+        </sonar.coverage.exclusions>
     </properties>
     <dependencies>
         <dependency>

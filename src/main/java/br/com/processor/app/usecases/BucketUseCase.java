@@ -28,8 +28,8 @@ public class BucketUseCase {
       .key(key)
       .build();
 
-    return Mono.fromFuture(s3AsyncClient.getObject(request, toFile(destinationPath))
-      .thenApply(response -> destinationPath))
+    return Mono.fromFuture(s3AsyncClient.getObject(request, toFile(destinationPath)))
+      .thenReturn(destinationPath)
       .doOnSuccess(path -> log.info("Get file successfully: {}", path))
       .doOnError(error -> log.error("Error processing get file: {}", error.getMessage()));
   }

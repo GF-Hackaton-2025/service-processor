@@ -4,6 +4,7 @@ import br.com.processor.app.usecases.ProcessFileUseCase;
 import br.com.processor.app.usecases.models.UploadQueueMessage;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import static br.com.processor.utils.JsonUtils.fromJson;
 @Slf4j
 public class SqsListener {
 
+  @Setter
   @Value("${aws.sqs.endpoint}")
   private String uploadsEventsQueueUrl;
 
