@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 
 import static br.com.processor.utils.JsonUtils.fromJson;
+import static java.lang.String.format;
 
 @Component
 @RequiredArgsConstructor
@@ -37,8 +38,10 @@ public class SqsListener {
       .build();
 
     Mono.fromFuture(() -> sqsAsyncClient.receiveMessage(request))
+      .repeat()
+      .retry()
       .flatMapIterable(ReceiveMessageResponse::messages)
-      .doOnNext(message -> log.info("Received message: {}", message.body()))
+      .doOnNext(message -> log.info(format("Received messageId: %s, messageBody: %s", message.messageId(), message.body())))
       .flatMap(this::processMessage)
       .subscribeOn(Schedulers.boundedElastic())
       .subscribe();
@@ -50,10 +53,12 @@ public class SqsListener {
   }
 
   private Mono<Void> deleteMessage(Message message) {
-    return Mono.fromRunnable(() -> sqsAsyncClient.deleteMessage(DeleteMessageRequest.builder()
+    return Mono.just(sqsAsyncClient.deleteMessage(DeleteMessageRequest.builder()
       .queueUrl(uploadsEventsQueueUrl)
       .receiptHandle(message.receiptHandle())
-      .build()));
+      .build()))
+      .doOnNext(m -> log.info(format("Deleted messageId: %s, messageBody: %s", message.messageId(), message.body())))
+      .then();
   }
 
 }
