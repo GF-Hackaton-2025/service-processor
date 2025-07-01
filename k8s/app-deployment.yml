@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-processor-app
+  labels:
+    app: service-processor-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-processor-app
+  template:
+    metadata:
+      labels:
+        app: service-processor-app
+    spec:
+      containers:
+        - name: app
+          image: 828818793977.dkr.ecr.us-east-1.amazonaws.com/service-processor:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "500m"
+            limits:
+              cpu: "1000m"
