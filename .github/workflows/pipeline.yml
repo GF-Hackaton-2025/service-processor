@@ -10,8 +10,8 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   IMAGE_TAG: latest
   SONAR_HOST_URL: https://sonarcloud.io
-  SONAR_PROJECT_KEY: gf-hackaton-2025-1_service-processor
-  SONAR_ORGANIZATION: gf-hackaton-2025-1
+  SONAR_PROJECT_KEY: GF-Hackaton-2025_service-processor
+  SONAR_ORGANIZATION: gf-hackaton-2025
 
 jobs:
   sonar:

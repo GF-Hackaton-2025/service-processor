@@ -1,7 +1,9 @@
 package br.com.processor.app.usecases;
 
+import br.com.processor.app.ports.FileProcessorQueue;
 import br.com.processor.app.usecases.models.UploadFileMessage;
 import br.com.processor.app.usecases.models.UploadQueueMessage;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,14 +14,9 @@ import reactor.test.StepVerifier;
 import java.nio.file.Path;
 import java.util.List;
 
-import static br.com.processor.enums.UploadFileStatus.UPLOAD_FAILURE;
 import static br.com.processor.enums.UploadFileStatus.UPLOAD_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -30,17 +27,24 @@ class ProcessFileUseCaseTest {
   private BucketUseCase bucketUseCase;
 
   @Mock
-  private EmailUseCase emailUseCase;
+  private FileUseCase fileUseCase;
 
   @Mock
-  private FileUseCase fileUseCase;
+  private FileProcessorQueue fileProcessorQueue;
 
   @InjectMocks
   private ProcessFileUseCase useCase;
 
+  private AutoCloseable closeable;
+
   @BeforeEach
-  void setup() {
-    openMocks(this);
+  void setUp() {
+    closeable = openMocks(this);
+  }
+
+  @AfterEach
+  void closeService() throws Exception {
+    closeable.close();
   }
 
   @Test
@@ -58,8 +62,8 @@ class ProcessFileUseCaseTest {
 
     when(bucketUseCase.getFile(any(), any(), any())).thenReturn(Mono.just(tempPath));
     when(bucketUseCase.uploadFile(any(), any(), any())).thenReturn(Mono.just(zipPath));
-    when(emailUseCase.sendEmail(any(), any(), any(), any())).thenReturn(Mono.empty());
     when(fileUseCase.processFile(any())).thenReturn(Mono.just(zipPath));
+    when(fileProcessorQueue.sendMessage(any())).thenReturn(Mono.empty());
 
     StepVerifier.create(useCase.process(message))
       .expectNext(message)
@@ -68,28 +72,7 @@ class ProcessFileUseCaseTest {
     verify(bucketUseCase).getFile(any(), any(), any());
     verify(bucketUseCase).uploadFile(any(), any(), any());
     verify(fileUseCase).processFile(any());
-    verify(emailUseCase, atLeastOnce()).sendEmail(eq(email), any(), contains("Success"), eq(zipPath));
-  }
-
-  @Test
-  void shouldSendErrorEmailWhenStatusIsNotSuccess() {
-    var fileName = "video.mp4";
-    var email = "user@example.com";
-
-    var uploadedFile = UploadFileMessage.builder()
-      .fileName(fileName)
-      .status(UPLOAD_FAILURE)
-      .build();
-    var message = new UploadQueueMessage(email, List.of(uploadedFile));
-
-    when(emailUseCase.sendEmail(any(), any(), any(), isNull())).thenReturn(Mono.empty());
-
-    StepVerifier.create(useCase.process(message))
-      .expectNext(message)
-      .verifyComplete();
-
-    verify(bucketUseCase, never()).getFile(any(), any(), any());
-    verify(emailUseCase).sendEmail(eq(email), any(), contains("Error"), isNull());
+    verify(fileProcessorQueue).sendMessage(contains("\"status\":\"PROCESSED\""));
   }
 
   @Test
@@ -97,6 +80,7 @@ class ProcessFileUseCaseTest {
     var fileName = "video.mp4";
     var email = "user@example.com";
     var tempPath = Path.of("/tmp/user@example.com_video.mp4");
+    var zipPath = Path.of("/tmp/video_frames.zip");
 
     var uploadedFile = UploadFileMessage.builder()
       .fileName(fileName)
@@ -105,13 +89,14 @@ class ProcessFileUseCaseTest {
     var message = new UploadQueueMessage(email, List.of(uploadedFile));
 
     when(bucketUseCase.getFile(any(), any(), any())).thenReturn(Mono.just(tempPath));
+    when(fileUseCase.processFile(any())).thenReturn(Mono.just(zipPath));
     when(bucketUseCase.uploadFile(any(), any(), any())).thenReturn(Mono.error(new RuntimeException("Upload failed")));
-    when(emailUseCase.sendEmail(any(), any(), any(), any())).thenReturn(Mono.empty());
+    when(fileProcessorQueue.sendMessage(any())).thenReturn(Mono.empty());
 
     StepVerifier.create(useCase.process(message))
-      .expectNext(message)
-      .verifyComplete();
+      .expectErrorMatches(throwable -> throwable instanceof RuntimeException && throwable.getMessage().equals("Upload failed"))
+      .verify();
 
-    verify(emailUseCase, atLeastOnce()).sendEmail(eq(email), any(), contains("Error"), isNull());
+    verify(fileProcessorQueue).sendMessage(contains("\"status\":\"FAILED\""));
   }
 }
