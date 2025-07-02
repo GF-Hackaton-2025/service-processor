@@ -1,23 +1,21 @@
 package br.com.processor.app.usecases.models;
 
-
+import br.com.processor.enums.FileStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UploadQueueMessage {
+public class FileProcessorQueueMessage {
 
   private String email;
-
-  @Builder.Default
-  private List<UploadFileMessage> files = new ArrayList<>();
+  private String fileId;
+  private String fileName;
+  private String zipFileName;
+  private FileStatusEnum status;
 
 }

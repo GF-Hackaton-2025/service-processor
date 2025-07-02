@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileUploadMessage {
+public class UploadFileMessage {
 
+  private String fileId;
   private String fileName;
   private UploadFileStatus status;
 

@@ -1,6 +1,6 @@
 package br.com.processor.app.usecases;
 
-import br.com.processor.app.usecases.models.FileUploadMessage;
+import br.com.processor.app.usecases.models.UploadFileMessage;
 import br.com.processor.app.usecases.models.UploadQueueMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class ProcessFileUseCaseTest {
     var tempPath = Path.of("/tmp/user@example.com_video.mp4");
     var zipPath = Path.of("/tmp/video_frames.zip");
 
-    var uploadedFile = FileUploadMessage.builder()
+    var uploadedFile = UploadFileMessage.builder()
       .fileName(fileName)
       .status(UPLOAD_SUCCESS)
       .build();
@@ -76,7 +76,7 @@ class ProcessFileUseCaseTest {
     var fileName = "video.mp4";
     var email = "user@example.com";
 
-    var uploadedFile = FileUploadMessage.builder()
+    var uploadedFile = UploadFileMessage.builder()
       .fileName(fileName)
       .status(UPLOAD_FAILURE)
       .build();
@@ -98,7 +98,7 @@ class ProcessFileUseCaseTest {
     var email = "user@example.com";
     var tempPath = Path.of("/tmp/user@example.com_video.mp4");
 
-    var uploadedFile = FileUploadMessage.builder()
+    var uploadedFile = UploadFileMessage.builder()
       .fileName(fileName)
       .status(UPLOAD_SUCCESS)
       .build();

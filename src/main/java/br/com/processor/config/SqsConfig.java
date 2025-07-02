@@ -20,4 +20,5 @@ public class SqsConfig {
       .credentialsProvider(DefaultCredentialsProvider.create())
       .build();
   }
+
 }
