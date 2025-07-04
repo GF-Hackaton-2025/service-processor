@@ -73,8 +73,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/service-processor:latest .
-          docker push $ECR_REGISTRY/service-processor:latest
+          docker build -t $ECR_REGISTRY/service-processor-repo:latest .
+          docker push $ECR_REGISTRY/service-processor-repo:latest
 
   deploy:
     runs-on: ubuntu-latest
