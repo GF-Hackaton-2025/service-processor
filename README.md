@@ -1,4 +1,4 @@
-# 🧑‍💻 service-user
+# 🧑‍💻 service-user 
 
 O `service-user` é um microsserviço desenvolvido em Java 21 utilizando Spring WebFlux, responsável pelo **cadastro de usuários** e **geração de tokens de autenticação (JWT)**. Este serviço é parte do ecossistema de microsserviços do projeto **FIAP X - Sistema de Processamento de Vídeos**.
 
