@@ -6,17 +6,3 @@ aws:
   sqs:
     endpoint: ${AWS_SQS_ENDPOINT:https://sqs.us-east-1.amazonaws.com/828818793977/uploads-events}
     fileProcessorQueueUrl: ${AWS_SQS_FILE_PROCESSOR_QUEUE_URL:https://sqs.us-east-1.amazonaws.com/828818793977/files-processor-events}
-
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus
-  endpoint:
-    prometheus:
-      enabled: true
-  metrics:
-    export:
-      prometheus:
-        enabled: true
