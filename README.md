@@ -1,6 +1,6 @@
-# 🧑‍💻 service-user 
+# 🧑‍💻 service-processor
 
-O `service-user` é um microsserviço desenvolvido em Java 21 utilizando Spring WebFlux, responsável pelo **cadastro de usuários** e **geração de tokens de autenticação (JWT)**. Este serviço é parte do ecossistema de microsserviços do projeto **FIAP X - Sistema de Processamento de Vídeos**.
+O `service-processor` é um microsserviço responsável por processar arquivos enviados para o SQS. Ele realiza a compactação (formato `.zip`) de arquivos armazenados no S3 e publica o resultado de volta no S3. Após o processamento, o serviço envia uma notificação via SQS para informar que o processamento foi concluído.
 
 ---
 
@@ -8,13 +8,11 @@ O `service-user` é um microsserviço desenvolvido em Java 21 utilizando Spring 
 
 - ✅ Java 21
 - ✅ Spring WebFlux
-- ✅ Spring Security (JWT)
 - ✅ Kubernetes
 - ✅ Terraform
 - ✅ AWS
 - ✅ Lombok
-- ✅ MongoDB
-- ✅ Swagger (OpenAPI)
+- ✅ SQS
 - ✅ Testes Unitários (JUnit + Mockito)
 - ✅ Maven
 
@@ -22,9 +20,10 @@ O `service-user` é um microsserviço desenvolvido em Java 21 utilizando Spring 
 
 ## 🚀 Funcionalidades
 
-- 📥 Cadastro de usuários
-- 🔐 Autenticação com retorno de token JWT
-- 🧪 Testes automatizados unitários
+- ☁️ Baixa arquivos do Amazon S3.
+- 🗜️ Compacta o(s) arquivo(s) em formato `.zip`.
+- 📤 Faz o upload do arquivo `.zip` para o S3.
+- 📬 Envia mensagem para uma fila SQS notificando outro serviço sobre a finalização do processamento.
 
 ---
 
